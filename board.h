@@ -1,7 +1,6 @@
 #pragma once
 #include "cell.h"
 #include <array>
-#include "network.h" 
 
 #define XSIZE 20
 #define YSIZE 24
@@ -20,31 +19,6 @@ class Board {
 	int CBlockY1, CBlockY2;
 	int RotateState1, RotateState2;
 public:
-
-	void SerializeIntoPacket(Packet &p, int score) {
-		for (size_t i = 0; i < XSIZE; i++)
-		{
-			for (size_t j = 0; j < YSIZE; j++)
-			{
-				p << (int)this->BoardContainer[i][j].GetColor();
-			}
-		}
-		p << score;
-	}
-
-	void DeserializeFromPacket(Packet &p, int &score) {
-		for (size_t i = 0; i < XSIZE; i++)
-		{
-			for (size_t j = 0; j < YSIZE; j++)
-			{
-				int a;
-				p >> a;
-				this->BoardContainer[i][j].SetColor((CellColor)a);
-			}
-		}
-		p >> score;
-	}
-
 	void SetCellColor(unsigned short x, unsigned short y, CellColor Color) {
 		BoardContainer[x][y].SetColor(Color);
 	}

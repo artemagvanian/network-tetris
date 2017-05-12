@@ -2,8 +2,8 @@
 #include "board.h"
 #include <time.h>
 
-short GenerateFigure(Board& BoardContainer, int Player) {
-	short choice = rand() % 7;
+short GenerateFigure(Board& BoardContainer, int Player, int PreGen) {
+	short choice = PreGen;
 	int push = (Player == SECOND_PLAYER) ? 11 : 0;
 
 	/*

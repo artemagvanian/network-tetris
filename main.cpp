@@ -22,11 +22,15 @@ int main() {
 	TcpSocket data;
 
 	char mode = NULL;
+	int repeat;
 
 	while (mode != 'S' && mode != 'C') {
 		cout << "Вы сервер или клиент (S/C): ";
 		cin >> mode;
 	}
+
+	cout << "Установить залипание клавиш?(0/1): ";
+	cin >> repeat;
 
 	//Создание сокета, установка соединения с клиентом
 	if (mode == 'S') {
@@ -138,208 +142,206 @@ int main() {
 	//Переменные 
 	Board MainBoard;
 	RenderWindow window(VideoMode(550, 700), "Tetrix", Style::Close);
-	Clock TurnClock1, TurnClock2;
+	Clock TurnClock;
 	int score = 0;
 	bool Move1 = true, Move2 = true;
+	int CanStart1 = true, CanStart2 = true, GenType = -1;
+	int gen1 = -1, gen2 = -1;
+	int i = 0;
+	int canstart = true;
+
+	window.setKeyRepeatEnabled(repeat);
 
 	while (window.isOpen())
 	{
+		//Генерация фигур
+		if ((gen1 != -1) && (gen2 != -1)) {
+			MainBoard.Deactive();
+			score += MainBoard.ClearStripes();
+			if (!MainBoard.CheckGame()) {
+				window.close();
+				LogCommand("Game over");
+				Packet p;
+				p << QUIT << 0;
+				data.send(p);
+				system("pause");
+				return 0;
+			}
+			sleep(milliseconds(100));
+			GenerateFigure(MainBoard, FIRST_PLAYER, gen1);
+			GenerateFigure(MainBoard, SECOND_PLAYER, gen2);
+			TurnClock.restart();
+			gen1 = -1;
+			gen2 = -1;
+			canstart = true;
+			Move1 = true;
+			Move2 = true;
+			i++;
+			cout << "#" << i << " " << score << " " << mode << endl;
+		}
 
 		//Обработчик нажатий клавиш
 		Event event;
 		while (window.pollEvent(event))
 		{
+			int mytype;
+			if (mode == 'S')
+				mytype = FIRST_PLAYER;
+			else if (mode == 'C')
+				mytype = SECOND_PLAYER;
+
 			if (event.type == Event::Closed || ((event.type == Event::KeyPressed) && (event.key.code == Keyboard::Escape))) {
 				window.close();
-				cout << "#Game over" << endl;
+				LogCommand("Game over");
 				Packet p;
-				p << QUIT;
+				p << QUIT << 0;
 				data.send(p);
 				system("pause");
 				return 0;
 			}
 			if ((event.type == Event::KeyPressed) && (event.key.code == Keyboard::Right)) {
-				if (mode == 'S') {
-					MainBoard.MoveActiveRight(FIRST_PLAYER);
-					Packet p;
-					p << BOARD;
-					MainBoard.SerializeIntoPacket(p, score);
-					data.send(p);
-				}
-				else if (mode == 'C') {
-					Packet p;
-					p << MOVERIGHT;
-					data.send(p);
-				}
+				MainBoard.MoveActiveRight(mytype);
+				Packet p;
+				p << MOVERIGHT << 0;
+				data.send(p);
 			}
 			if ((event.type == Event::KeyPressed) && (event.key.code == Keyboard::Left)) {
-				if (mode == 'S') {
-					MainBoard.MoveActiveLeft(FIRST_PLAYER);
-					Packet p;
-					p << BOARD;
-					MainBoard.SerializeIntoPacket(p, score);
-					data.send(p);
-				}
-				else if (mode == 'C') {
-					Packet p;
-					p << MOVELEFT;
-					data.send(p);
-				}
+				MainBoard.MoveActiveLeft(mytype);
+				Packet p;
+				p << MOVELEFT << 0;
+				data.send(p);
 			}
 			if ((event.type == Event::KeyPressed) && (event.key.code == Keyboard::Down)) {
-				if (mode == 'S') {
-					Move1 = MainBoard.MoveActiveDown(FIRST_PLAYER);
-					TurnClock1.restart();
-					Packet p;
-					p << BOARD;
-					MainBoard.SerializeIntoPacket(p, score);
-					data.send(p);
-				}
-				else if (mode == 'C') {
-					Packet p;
-					p << MOVEDOWN;
-					data.send(p);
-				}
+				if (mode == 'S')
+					Move1 = MainBoard.MoveActiveDown(mytype);
+				else if (mode == 'C')
+					Move2 = MainBoard.MoveActiveDown(mytype);
+				TurnClock.restart();
+				Packet p;
+				p << MOVEDOWN << 0;
+				data.send(p);
 			}
 			if ((event.type == Event::KeyPressed) && (event.key.code == Keyboard::Up)) {
-				if (mode == 'S') {
-					MainBoard.RotateActiveFigure(FIRST_PLAYER);
-					Packet p;
-					p << BOARD;
-					MainBoard.SerializeIntoPacket(p, score);
-					data.send(p);
-				}
-				else if (mode == 'C') {
-					Packet p;
-					p << ROTATE;
-					data.send(p);
-				}
+				MainBoard.RotateActiveFigure(mytype);
+				Packet p;
+				p << ROTATE << 0;
+				data.send(p);
 			}
 			if ((event.type == Event::KeyPressed) && (event.key.code == Keyboard::LControl)) {
-				if (mode == 'S') {
-					MainBoard.BigMoveDown(FIRST_PLAYER);
+				MainBoard.BigMoveDown(mytype);
+				if (mode == 'S')
 					Move1 = false;
-					Packet p;
-					p << BOARD;
-					MainBoard.SerializeIntoPacket(p, score);
-					data.send(p);
-				}
-				else if (mode == 'C') {
-					Packet p; 
-					p << FULLMOVEDOWN;
-					data.send(p);
-				}
+				else if (mode == 'C')
+					Move2 = false;
+				Packet p;
+				p << FULLMOVEDOWN << 0;
+				data.send(p);
 			}
 		}
 
 		//Движение блоков вниз по времени, если некуда двигать, отсылание комманды готовности к новой генерации
-		if ((Move1 || Move2) && mode == 'S') {
-			if (TurnClock1.getElapsedTime().asMilliseconds() >= 750) {
-				TurnClock1.restart();
-				Move1 = MainBoard.MoveActiveDown(FIRST_PLAYER);
+		if (Move1 || Move2) {
+			if (TurnClock.getElapsedTime().asMilliseconds() >= 750) {
+				TurnClock.restart();
+				if (mode == 'S')
+					Move1 = MainBoard.MoveActiveDown(FIRST_PLAYER);
+				else if (mode == 'C')
+					Move2 = MainBoard.MoveActiveDown(SECOND_PLAYER);
 				Packet p;
-				p << BOARD;
-				MainBoard.SerializeIntoPacket(p, score);
-				data.send(p);
-			}
-			else if (TurnClock2.getElapsedTime().asMilliseconds() >= 750) {
-				TurnClock2.restart();
-				Move2 = MainBoard.MoveActiveDown(SECOND_PLAYER);
-				Packet p;
-				p << BOARD;
-				MainBoard.SerializeIntoPacket(p, score);
+				p << MOVEDOWN << 0;
 				data.send(p);
 			}
 		}
-		else if (mode == 'S') {
-			MainBoard.Deactive();
-			score += MainBoard.ClearStripes();
-			if (!MainBoard.CheckGame()) {
-				window.close();
-				cout << "#Game over" << endl;
-				Packet p;
-				p << QUIT;
-				data.send(p);
-				system("pause");
-				return 0;
-			}
-			GenerateFigure(MainBoard, FIRST_PLAYER);
-			GenerateFigure(MainBoard, SECOND_PLAYER);
+		else if (canstart) {
 			Packet p;
-			p << BOARD;
-			MainBoard.SerializeIntoPacket(p, score);
+			TurnClock.restart();
+			p << CANSTART << 0;
 			data.send(p);
-			TurnClock1.restart();
-			TurnClock2.restart();
-			Move1 = true;
-			Move2 = true;
+			if (mode == 'S') {
+				CanStart1 = true;
+				LogCommand("Server can start");
+			}
+			else if (mode == 'C') {
+				CanStart2 = true;
+				LogCommand("Client can start");
+			}
+			canstart = false;
+		}
+
+		//Обмен сообщениями о готовности генерации
+		if (CanStart1 && CanStart2) {
+			int param = rand() % 7;
+			if (mode == 'S') {
+				gen1 = param;
+				LogCommand("Server can generate");
+			}
+			else if (mode == 'C') {
+				gen2 = param;
+				LogCommand("Client can generate");
+			}
+			Packet p;
+			p << GENERATEDFIGURE << param;
+			data.send(p);
+			CanStart1 = false;
+			CanStart2 = false;
 		}
 
 		//Обработчики получаемых через сокет комманд для сервера и клиента
 		Packet p;
 		Socket::Status s = data.receive(p);
 		if (s == Socket::Status::Done) {
-			int action;
-			p >> action;
+			int action, param, receivertype;
+
+			if (mode == 'S')
+				receivertype = SECOND_PLAYER;
+			else if (mode == 'C')
+				receivertype = FIRST_PLAYER;
+
+			p >> action >> param;
+
 			switch (action) {
 			case MOVELEFT:
-			{
-				MainBoard.MoveActiveLeft(SECOND_PLAYER);
-				Packet p1;
-				p1 << BOARD;
-				MainBoard.SerializeIntoPacket(p1, score);
-				data.send(p1);
-			}
-			break;
+				MainBoard.MoveActiveLeft(receivertype);
+				break;
 			case MOVERIGHT:
-			{
-				MainBoard.MoveActiveRight(SECOND_PLAYER);
-				Packet p1;
-				p1 << BOARD;
-				MainBoard.SerializeIntoPacket(p1, score);
-				data.send(p1);
-			}
-			break;
+				MainBoard.MoveActiveRight(receivertype);
+				break;
 			case MOVEDOWN:
-			{
-				Move2 = MainBoard.MoveActiveDown(SECOND_PLAYER);
-				Packet p1;
-				p1 << BOARD;
-				MainBoard.SerializeIntoPacket(p1, score);
-				data.send(p1);
-				TurnClock2.restart();
-			}
-			break;
+				if (mode == 'S')
+					Move2 = MainBoard.MoveActiveDown(receivertype);
+				else if (mode == 'C')
+					Move1 = MainBoard.MoveActiveDown(receivertype);
+				break;
 			case ROTATE:
-			{
-				MainBoard.RotateActiveFigure(SECOND_PLAYER);
-				Packet p1;
-				p1 << BOARD;
-				MainBoard.SerializeIntoPacket(p1, score);
-				data.send(p1);
-			}
-			break;
+				MainBoard.RotateActiveFigure(receivertype);
+				break;
+			case GENERATEDFIGURE:
+				if (mode == 'S')
+					gen2 = param;
+				else if (mode == 'C')
+					gen1 = param;
+				break;
+			case CANSTART:
+				if (mode == 'S')
+					CanStart2 = true;
+				else if (mode == 'C')
+					CanStart1 = true;
+				break;
 			case QUIT:
 				window.close();
-				cout << "#Game over" << endl;
+				LogCommand("Game over");
 				system("pause");
 				return 0;
 				break;
 			case FULLMOVEDOWN:
-			{
-				MainBoard.BigMoveDown(SECOND_PLAYER);
-				Move2 = false;
-				Packet p1;
-				p << BOARD;
-				MainBoard.SerializeIntoPacket(p1, score);
-				data.send(p1);
-			}
-			break;
-			case BOARD:
-				MainBoard.DeserializeFromPacket(p, score);
-				break;
+				MainBoard.BigMoveDown(receivertype);
+				if (mode == 'S')
+					Move2 = false;
+				else if (mode == 'C')
+					Move1 = false;
 			}
 		}
+
 		Draw(MainBoard, window, score);
 	}
 
