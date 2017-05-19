@@ -1,3 +1,3 @@
 # Tetrix
-Tetrix course project
+Tetrix course project\n
 Demo multiplayer tetris
