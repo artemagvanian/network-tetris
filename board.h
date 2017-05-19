@@ -1,15 +1,9 @@
 #pragma once
+#include "stdinclude.h"
 #include "cell.h"
-#include <array>
-#include "network.h" 
-
-#define XSIZE 20
-#define YSIZE 24
-
-#define FIRST_PLAYER 1
-#define SECOND_PLAYER 2
 
 using namespace std;
+using namespace sf;
 
 enum Tetramino { I = 0, J, L, O, S, T, Z };
 
@@ -20,7 +14,6 @@ class Board {
 	int CBlockY1, CBlockY2;
 	int RotateState1, RotateState2;
 public:
-
 	void SerializeIntoPacket(Packet &p, int score) {
 		for (size_t i = 0; i < XSIZE; i++)
 		{
@@ -290,7 +283,7 @@ public:
 
 			}
 		}
-		cout << "#DEACTIVATION!" << endl;
+		//cout << "#DEACTIVATION!" << endl;
 	}
 
 	void BigMoveDown(int player) {

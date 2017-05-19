@@ -1,6 +1,6 @@
 #pragma once
+#include "stdinclude.h"
 #include "board.h"
-#include <time.h>
 
 short GenerateFigure(Board& BoardContainer, int Player) {
 	short choice = rand() % 7;
@@ -28,7 +28,7 @@ short GenerateFigure(Board& BoardContainer, int Player) {
 		**
 	*/
 
-	cout << "#" << "Generating figure " << choice << " for player " << Player << endl;
+	//cout << "#" << "Generating figure " << choice << " for player " << Player << endl;
 
 	switch (choice) {
 	case 0:

@@ -1,12 +1,23 @@
 #pragma once
-#include <SFML/Network.hpp>
+#include "stdinclude.h"
+#include "board.h"
 
 using namespace sf;
+using namespace std;
 
-#define MOVELEFT			1
-#define MOVERIGHT			2
-#define MOVEDOWN			3
-#define ROTATE				4
-#define FULLMOVEDOWN		5
-#define QUIT				6
-#define BOARD				7
+void SendSocketMessage(TcpSocket &sock, int command) {
+	if (command >= 1 && command <= 7) {
+		Packet p;
+		p << command;
+		sock.send(p);
+	}
+	else {
+		//cout << "#Invalid command" << endl;
+	}
+}
+void SendGameData(TcpSocket &sock, Board &board, int score) {
+	Packet p;
+	p << BOARD;
+	board.SerializeIntoPacket(p, score);
+	sock.send(p);
+}
