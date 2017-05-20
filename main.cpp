@@ -57,7 +57,7 @@ int main() {
 					continue;
 				}
 
-				dropThread = true;
+				DropThread();
 
 				name = mbox("Enter team's name: ", 0, 10);
 
@@ -67,7 +67,7 @@ int main() {
 				data.send(test);
 				data.setBlocking(false);
 
-				mbox("Sucess", 5000);
+				mbox("Sucess", 2500, 0, true);
 			}
 			else if (mode == 'C') {
 				IpAddress ServerIp;
@@ -89,8 +89,8 @@ int main() {
 				test >> name;
 				app = "Your team's name:\n";
 				app.append(name);
-				dropThread = true;
-				mbox(app, 5000);
+				DropThread();
+				mbox(app, 2500, 0, true);
 				data.setBlocking(false);
 			}
 
@@ -263,10 +263,12 @@ int main() {
 				//Отрисовка доски
 				Draw(MainBoard, window, score);
 			}
-			ofstream file;
-			file.open("score.dat", ios::app | ios::out);
-			file << endl << name << endl << score;
-			file.close();
+			if (score > 0) {
+				ofstream file;
+				file.open("score.dat", ios::app | ios::out);
+				file << endl << name << endl << score;
+				file.close();
+			}
 		}
 		else if (menuChoice == 2) {
 			ShowScore();

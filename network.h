@@ -1,3 +1,6 @@
+//network.h is part of TetrixSTATIC
+//Отвечает за пересылку основных команд и игрового поля
+
 #pragma once
 #include "stdinclude.h"
 #include "board.h"

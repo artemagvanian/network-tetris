@@ -1,3 +1,6 @@
+//scoreboard.h is part of TetrixSTATIC
+//Отвечает за вывод таблицы рекордов в графическом виде
+
 #pragma once
 #include "stdinclude.h"
 
@@ -42,7 +45,7 @@ void ShowScore() {
 
 	sort(scores.begin(), scores.end(), compare);
 
-	int sizeofboard = (scores.size() > 10) ? 10 : scores.size();
+	size_t sizeofboard = (scores.size() > 10) ? 10 : scores.size();
 
 	//Обрезаем никнеймы до 10 символов
 	for (size_t i = 0; i < scores.size(); i++)
@@ -60,7 +63,7 @@ void ShowScore() {
 	for (size_t i = 0; i < sizeofboard; i++)
 	{
 		nicknameTexts.push_back(Text(scores[i].first, font, 30));
-		nicknameTexts[i].setPosition(75, 155 + 55 * i);
+		nicknameTexts[i].setPosition(75, 155 + 55 * (float)i);
 		nicknameTexts[i].setFillColor(Color::Black);
 	}
 
@@ -69,7 +72,7 @@ void ShowScore() {
 	{
 		RectangleShape shape;
 		shape.setFillColor(Color(rand() % 256, rand() % 256, rand() % 256));
-		shape.setPosition(375, 160 + 55 * i);
+		shape.setPosition(375, 160 + 55 * (float)i);
 		x = 3 * (float)scores[i].second / scores[0].second;
 		shape.setSize(Vector2f(x, 30));
 		shape.setOutlineColor(Color::White);
@@ -81,7 +84,7 @@ void ShowScore() {
 	for (size_t i = 0; i < sizeofboard; i++)
 	{
 		scoreTexts.push_back(Text(to_string(scores[i].second), font, 30));
-		scoreTexts[i].setPosition(275, 155 + 55 * i);
+		scoreTexts[i].setPosition(275, 155 + 55 * (float)i);
 		scoreTexts[i].setFillColor(Color::Black);
 	}
 

@@ -1,3 +1,6 @@
+//generator.h is part of TetrixSTATIC
+//Отвечает за генерацию поля 
+
 #pragma once
 #include "stdinclude.h"
 #include "board.h"
@@ -30,6 +33,7 @@ short GenerateFigure(Board& BoardContainer, int Player) {
 
 	//cout << "#" << "Generating figure " << choice << " for player " << Player << endl;
 
+	//Генерация клеток
 	switch (choice) {
 	case 0:
 		BoardContainer.SetCellColor(3 + push, 1, LightBlue);

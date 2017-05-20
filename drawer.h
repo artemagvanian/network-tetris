@@ -1,3 +1,6 @@
+//drawer.h is part of TetrixSTATIC
+//Отвечает за отрисовку игрового цикла
+
 #pragma once
 #include "stdinclude.h"
 #include "board.h"
@@ -24,6 +27,7 @@ void Draw(Board BoardContainer, RenderWindow& window, int score) {
 
 	window.draw(bg);
 
+	//Отрисовка поля
 	for (int i = 0; i < XSIZE; i++)
 	{
 		for (int j = 0; j < YSIZE; j++)

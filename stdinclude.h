@@ -1,3 +1,6 @@
+//stdinclude.h is part of TetrixSTATIC
+//Содержит в себе заголовки основных подключаемых файлов
+
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>

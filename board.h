@@ -1,3 +1,6 @@
+//board.h is part of TetrixSTATIC
+//Содержит класс игрового поля и функции работы с ним
+
 #pragma once
 #include "stdinclude.h"
 #include "cell.h"
@@ -14,6 +17,7 @@ class Board {
 	int CBlockY1, CBlockY2;
 	int RotateState1, RotateState2;
 public:
+	//Сериализация и десериализация доски
 	void SerializeIntoPacket(Packet &p, int score) {
 		for (size_t i = 0; i < XSIZE; i++)
 		{
@@ -38,6 +42,7 @@ public:
 		p >> score;
 	}
 
+	//Блок сеттеров
 	void SetCellColor(unsigned short x, unsigned short y, CellColor Color) {
 		BoardContainer[x][y].SetColor(Color);
 	}
@@ -72,6 +77,7 @@ public:
 		this->RotateState2 = RotateState2;
 	}
 
+	//Блок геттеров
 	CellColor GetCellColor(unsigned short x, unsigned short y) {
 		return BoardContainer[x][y].GetColor();
 	}
@@ -106,6 +112,7 @@ public:
 		return RotateState2;
 	}
 
+	//Очистка линий и добавление очков
 	unsigned int ClearStripes() {
 		unsigned int points = 0;
 		for (int i = 0; i < YSIZE; i++)
@@ -129,6 +136,7 @@ public:
 		return points;
 	}
 
+	//Удаление линии
 	void DeleteStripe(unsigned short y) {
 		for (int i = (y - 1); i >= 0; i--)
 		{
@@ -140,6 +148,7 @@ public:
 		}
 	}
 
+	//Сдвиг фигур игровка вниз
 	bool MoveActiveDown(int Player) {
 		bool StillMoving = true;
 		bool active = false;
@@ -189,6 +198,7 @@ public:
 		return StillMoving;
 	}
 
+	//Сдвиг фигур игрока влево
 	void MoveActiveLeft(int Player) {
 		bool StillMoving = true;
 		for (int i = 0; i < XSIZE; i++)
@@ -231,6 +241,8 @@ public:
 
 		}
 	}
+
+	//Сдвиг фигур игрока вправо
 	void MoveActiveRight(int Player) {
 		bool StillMoving = true;
 		for (int i = 0; i < XSIZE; i++)
@@ -274,6 +286,7 @@ public:
 		}
 	}
 
+	//Деактивация фигур игрока
 	void Deactive() {
 		for (int i = 0; i < XSIZE; i++)
 		{
@@ -286,10 +299,12 @@ public:
 		//cout << "#DEACTIVATION!" << endl;
 	}
 
+	//Падение вниз фигуры
 	void BigMoveDown(int player) {
 		while (MoveActiveDown(player));
 	}
 
+	//Проверка клеток на активность
 	bool isActiveCells() {
 		for (int i = 0; i < XSIZE; i++)
 		{
@@ -303,6 +318,7 @@ public:
 		return false;
 	}
 
+	//Проверка, можем ли продолжать игру
 	bool CheckGame() {
 		for (int i = 0; i < XSIZE; i++)
 		{
@@ -312,6 +328,8 @@ public:
 		}
 		return true;
 	}
+
+	//Поворот фигуры
 	void RotateActiveFigure(int Player) {
 		int ActiveFigureType = (Player == FIRST_PLAYER) ? ActiveFigureType1 : ActiveFigureType2;
 		int RotateState = (Player == FIRST_PLAYER) ? RotateState1 : RotateState2;

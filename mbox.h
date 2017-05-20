@@ -1,12 +1,21 @@
+//mbox.h is part of TetrixSTATIC
+//Отвечает за создание MessageBox-ов с заданным содержимым
+//Поддерживает работу в потоках
+
 #pragma once
 #include "stdinclude.h"
 
 using namespace std;
 using namespace sf;
 
-string mbox(string message, int delay = 0, int returnLength = 0, bool noSkip = false, bool manualDropping = false) {
+void DropThread() {
+	dropThread = true;
+}
+
+string mbox(string message, int delay = 0, size_t returnLength = 0, bool noSkip = false, bool manualDropping = false) {
 	RenderWindow window(VideoMode(350, 200), "Message", Style::Close);
 
+	//Подготовка к созданию mbox-а
 	Image icon;
 	icon.loadFromFile("redist/blocks/Blue.png");
 	window.setIcon(24, 24, icon.getPixelsPtr());
@@ -33,6 +42,7 @@ string mbox(string message, int delay = 0, int returnLength = 0, bool noSkip = f
 
 	Clock clock;
 
+	//Открытие цикла окна
 	while (window.isOpen())
 	{
 		if (dropThread && manualDropping) {
@@ -43,6 +53,7 @@ string mbox(string message, int delay = 0, int returnLength = 0, bool noSkip = f
 		Event event;
 		while (window.pollEvent(event))
 		{
+			//Точки выхода
 			if (event.type == Event::Closed) {
 				window.close();
 				return result;
@@ -53,6 +64,7 @@ string mbox(string message, int delay = 0, int returnLength = 0, bool noSkip = f
 					return result;
 				}
 			}
+			//Ввод текста
 			if (event.type == Event::TextEntered)
 			{
 				if (event.text.unicode < 128 && event.text.unicode > 32)
@@ -62,6 +74,7 @@ string mbox(string message, int delay = 0, int returnLength = 0, bool noSkip = f
 						ResultText.setString(result);
 					}
 				}
+				//Стирание текста (8 == BS)
 				if (event.text.unicode == 8) {
 					if (result.size() > 0) {
 						result.pop_back();

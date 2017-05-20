@@ -1,3 +1,6 @@
+//menu.h is part of TetrixSTATIC
+//Отвечает за создание игрового меню, возвращение результата выбора пользователя
+
 #pragma once
 #include "stdinclude.h"
 
@@ -44,6 +47,7 @@ int CreateWindowMenu() {
 				window.close();
 				return 3;
 			}
+			//Выбор пункта меню
 			if (event.type == Event::MouseButtonPressed)
 			{
 				if (event.mouseButton.button == Mouse::Left)
@@ -62,6 +66,7 @@ int CreateWindowMenu() {
 					}
 				}
 			}
+			//Изменение цвета при наведении
 			if (event.type == Event::MouseMoved)
 			{
 				if (event.mouseMove.x >= 200 && event.mouseMove.y >= 250 && event.mouseMove.x <= 310 && event.mouseMove.y <= 310)
