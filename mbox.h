@@ -16,21 +16,12 @@ string mbox(string message, int delay = 0, size_t returnLength = 0, bool noSkip 
 	RenderWindow window(VideoMode(350, 200), "Message", Style::Close);
 
 	//Подготовка к созданию mbox-а
-	Image icon;
-	icon.loadFromFile("redist/blocks/Blue.png");
 	window.setIcon(24, 24, icon.getPixelsPtr());
 
-	Texture background_t;
-	background_t.loadFromFile("redist/backgrounds/messageboxbg.png");
 	Sprite background;
-	background.setTexture(background_t);
+	background.setTexture(mboxbg_t);
 
 	string result;
-
-	Font font;
-	if (!font.loadFromFile("redist/fonts/Arista.ttf")) {
-		//cout << "Ошибка при загрузке шрифта!" << endl;
-	}
 
 	Text MessageTitle(message, font, 40);
 	MessageTitle.setPosition(Vector2f(20, 10));

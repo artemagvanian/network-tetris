@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "stdinclude.h"
 #include "mbox.h"
+#include "init.h"
 
 using namespace std;
 using namespace sf;
@@ -16,7 +17,11 @@ int main() {
 	setlocale(LC_ALL, "rus");
 	srand((unsigned int)time(0));
 
-	SetConsoleTitle("Logger");
+	//SetConsoleTitle("Logger");
+
+	if (!init()) {
+		return 0;
+	}
 
 	int menuChoice = 1;
 	while (menuChoice != 3) {
@@ -101,8 +106,6 @@ int main() {
 			RenderWindow window(VideoMode(550, 700), "Tetrix", Style::Close);
 
 			//Установка красивой иконки
-			Image icon;
-			icon.loadFromFile("redist/blocks/Blue.png");
 			window.setIcon(24, 24, icon.getPixelsPtr());
 
 			//Таймеры "падения" блоков

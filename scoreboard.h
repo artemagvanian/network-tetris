@@ -16,8 +16,6 @@ bool compare(pair<string, int> p1, pair<string, int> p2) {
 void ShowScore() {
 	RenderWindow window(VideoMode(750, 750), "Scoreboard", Style::Close);
 
-	Image icon;
-	icon.loadFromFile("redist/blocks/Blue.png");
 	window.setIcon(24, 24, icon.getPixelsPtr());
 
 	//Контейнеры для хранения данных
@@ -56,10 +54,6 @@ void ShowScore() {
 	}
 
 	//Парсим и запихиваем в контейнеры
-	Font font;
-	if (!font.loadFromFile("redist/fonts/Arista.ttf")) {
-		//cout << "Ошибка при загрузке шрифта!" << endl;
-	}
 	for (size_t i = 0; i < sizeofboard; i++)
 	{
 		nicknameTexts.push_back(Text(scores[i].first, font, 30));
@@ -88,10 +82,8 @@ void ShowScore() {
 		scoreTexts[i].setFillColor(Color::Black);
 	}
 
-	Texture background_t;
-	background_t.loadFromFile("redist/backgrounds/scoreboardbg.png");
 	Sprite background;
-	background.setTexture(background_t);
+	background.setTexture(scorebg_t);
 
 	//Таймер и счётчик анимации
 	Clock animation;

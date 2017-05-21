@@ -10,20 +10,9 @@ using namespace std;
 
 void Draw(Board BoardContainer, RenderWindow& window, int score) {
 
-	Texture LightBlue_t, Blue_t, Orange_t, Yellow_t, Green_t, Magenta_t, Red_t, bg_t;
-
-	bg_t.loadFromFile("redist/backgrounds/gamebg.png");
-	LightBlue_t.loadFromFile("redist/blocks/LightBlue.png");
-	Blue_t.loadFromFile("redist/blocks/Blue.png");
-	Orange_t.loadFromFile("redist/blocks/Orange.png");
-	Yellow_t.loadFromFile("redist/blocks/Yellow.png");
-	Green_t.loadFromFile("redist/blocks/Green.png");
-	Magenta_t.loadFromFile("redist/blocks/Magenta.png");
-	Red_t.loadFromFile("redist/blocks/Red.png");
-
 	window.clear();
 
-	Sprite bg(bg_t);
+	Sprite bg(gamebg_t);
 
 	window.draw(bg);
 
@@ -75,11 +64,6 @@ void Draw(Board BoardContainer, RenderWindow& window, int score) {
 				break;
 			}
 		}
-	}
-
-	Font font;
-	if (!font.loadFromFile("redist/fonts/Arista.ttf")) {
-		//cout << "Ошибка при загрузке шрифта!" << endl;
 	}
 
 	Text scoretext;

@@ -9,19 +9,13 @@ using namespace std;
 
 int CreateWindowMenu() {
 	RenderWindow window(VideoMode(750, 750), "Menu", Style::Close);
-	Texture background_t;
-	background_t.loadFromFile("redist/backgrounds/menubg.png");
 	Sprite background;
-	background.setTexture(background_t);
+	background.setTexture(menubg_t);
 
 	Image icon;
 	icon.loadFromFile("redist/blocks/Blue.png");
 	window.setIcon(24, 24, icon.getPixelsPtr());
 
-	Font font;
-	if (!font.loadFromFile("redist/fonts/Arista.ttf")) {
-		//cout << "Ошибка при загрузке шрифта!" << endl;
-	}
 	vector<Text> menu;
 	menu.resize(3);
 	menu[0] = Text("Play", font, 60);
