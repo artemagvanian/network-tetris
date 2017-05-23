@@ -13,7 +13,12 @@ void DropThread() {
 }
 
 string mbox(string message, int delay = 0, size_t returnLength = 0, bool noSkip = false, bool manualDropping = false) {
-	RenderWindow window(VideoMode(350, 200), "Message", Style::Close);
+	Uint32 style;
+	if (noSkip)
+		style = Style::Titlebar;
+	else
+		style = Style::Close;
+	RenderWindow window(VideoMode(350, 200), "Message", style);
 
 	//Подготовка к созданию mbox-а
 	window.setIcon(24, 24, icon.getPixelsPtr());
@@ -46,6 +51,8 @@ string mbox(string message, int delay = 0, size_t returnLength = 0, bool noSkip 
 		{
 			//Точки выхода
 			if (event.type == Event::Closed) {
+				if (dropThread)
+					dropThread = false;
 				window.close();
 				return result;
 			}
@@ -85,4 +92,5 @@ string mbox(string message, int delay = 0, size_t returnLength = 0, bool noSkip 
 		window.draw(ResultText);
 		window.display();
 	}
+	return "";
 }

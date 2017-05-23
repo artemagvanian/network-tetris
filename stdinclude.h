@@ -15,7 +15,7 @@
 #include <thread>
 #include "defines.h"
 
-bool dropThread = false;
+static bool dropThread = false;
 
 sf::Font font;
 

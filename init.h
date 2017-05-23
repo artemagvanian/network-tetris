@@ -1,3 +1,6 @@
+//init.h is part of TetrixSTATIC
+//Загружает все ресурсы в оперативную память компьютера
+
 #pragma once
 #include "stdinclude.h"
 #include "mbox.h"

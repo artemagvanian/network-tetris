@@ -1,3 +1,6 @@
+//Включение/отключение окна консоли
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+
 #include "board.h"
 #include "generator.h"
 #include "drawer.h"
@@ -57,6 +60,7 @@ int main() {
 				//Подключаем клиента
 				if (listener.accept(data) != Socket::Done)
 				{
+					DropThread();
 					string app = "Error...\nGoing to main menu...";
 					mbox(app);
 					continue;
@@ -83,6 +87,7 @@ int main() {
 				thread2.detach();
 
 				if (data.connect(ServerIp, CONNECTPORT) != Socket::Done) {
+					DropThread();
 					string app = "Error...\nGoing to main menu...";
 					mbox(app);
 					continue;
