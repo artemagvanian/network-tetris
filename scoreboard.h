@@ -19,7 +19,7 @@ void ShowScore() {
 	window.setIcon(24, 24, icon.getPixelsPtr());
 
 	//Контейнеры для хранения данных
-	static vector<pair<string, int>> scores;
+	vector<pair<string, int>> scores;
 	vector<Text> scoreTexts;
 	vector<Text> nicknameTexts;
 	vector<RectangleShape> scoreSprites;
